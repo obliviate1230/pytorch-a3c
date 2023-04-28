@@ -27,7 +27,7 @@ def train(rank, args, shared_model, counter, lock, optimizer=None):
 
     model.train()
 
-    state = env.reset()
+    state, _ = env.reset(seed=args.seed+rank)
     state = torch.from_numpy(state)
     done = True
 
@@ -59,7 +59,8 @@ def train(rank, args, shared_model, counter, lock, optimizer=None):
             action = prob.multinomial(num_samples=1).detach()
             log_prob = log_prob.gather(1, action)
 
-            state, reward, done, _ = env.step(action.numpy())
+            state, reward, terminated, truncated, _ = env.step(int(action.view(-1).numpy()))
+            done = terminated or truncated
             done = done or episode_length >= args.max_episode_length
             reward = max(min(reward, 1), -1)
 
@@ -68,7 +69,7 @@ def train(rank, args, shared_model, counter, lock, optimizer=None):
 
             if done:
                 episode_length = 0
-                state = env.reset()
+                state, _ = env.reset()
 
             state = torch.from_numpy(state)
             values.append(value)

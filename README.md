@@ -1,3 +1,5 @@
+# UPDATE
+update the code to support the current version of pytorch(1.13) and gym(0.26)
 # pytorch-a3c
 
 This is a PyTorch implementation of Asynchronous Advantage Actor Critic (A3C) from ["Asynchronous Methods for Deep Reinforcement Learning"](https://arxiv.org/pdf/1602.01783v1.pdf).

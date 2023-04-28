@@ -46,6 +46,8 @@ if __name__ == '__main__':
     os.environ['OMP_NUM_THREADS'] = '1'
     os.environ['CUDA_VISIBLE_DEVICES'] = ""
 
+    mp.set_start_method('spawn')
+
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)

@@ -18,7 +18,7 @@ def test(rank, args, shared_model, counter):
 
     model.eval()
 
-    state = env.reset()
+    state, _ = env.reset(seed=args.seed+rank)
     state = torch.from_numpy(state)
     reward_sum = 0
     done = True
@@ -44,7 +44,8 @@ def test(rank, args, shared_model, counter):
         prob = F.softmax(logit, dim=-1)
         action = prob.max(1, keepdim=True)[1].numpy()
 
-        state, reward, done, _ = env.step(action[0, 0])
+        state, reward, terminated, truncated, _ = env.step(int(action[0, 0]))
+        done = terminated or truncated
         done = done or episode_length >= args.max_episode_length
         reward_sum += reward
 
@@ -62,7 +63,7 @@ def test(rank, args, shared_model, counter):
             reward_sum = 0
             episode_length = 0
             actions.clear()
-            state = env.reset()
+            state, _ = env.reset()
             time.sleep(60)
 
         state = torch.from_numpy(state)
